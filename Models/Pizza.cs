@@ -14,5 +14,6 @@ public class Pizza {
     public int Rating { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+    public Guid MenuId { get; set; }
 
 }
