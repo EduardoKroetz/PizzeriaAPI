@@ -18,6 +18,8 @@ public class PizzeriaDataContext : DbContext
     {
         Console.WriteLine(Configurations.ConnectionString);
         optionsBuilder.UseSqlServer(Configurations.ConnectionString);
+        //optionsBuilder.UseSqlServer("Server=localhost,1433;Database=Pizzeria;User ID=sa;Password=1q2w3e4r@#$;TrustServerCertificate=true");
+
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) 

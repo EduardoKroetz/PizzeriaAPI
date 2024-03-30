@@ -22,7 +22,7 @@ public class UserMap : IEntityTypeConfiguration<User> {
 
         builder.Property(x => x.Email)
             .IsRequired()
-            .HasColumnName("Number")
+            .HasColumnName("Email")
             .HasColumnType("NVARCHAR")
             .HasMaxLength(160);
 
