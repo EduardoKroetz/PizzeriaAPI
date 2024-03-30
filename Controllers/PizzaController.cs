@@ -9,17 +9,20 @@ using PizzeriaApi.ViewModels.Pizzas;
 namespace PizzeriaApi.Controllers;
 
 [ApiController]
-public class PizzaController : ControllerBase
+public class PizzaController(PizzeriaDataContext context) : ControllerBase
 {
+    private readonly PizzeriaDataContext _context = context;
+
     [HttpGet("v1/pizzas")]
     public async Task<IActionResult> GetAsync(
-        [FromServices] PizzeriaDataContext context,
+        
+
         [FromQuery] int skip = 0,
         [FromQuery] int take = 25)
     {
         try
         {
-            var pizzas = await context
+            var pizzas = await _context
                 .Pizzas
                 .AsNoTracking()
                 .Select(x =>
@@ -47,12 +50,12 @@ public class PizzaController : ControllerBase
 
     [HttpGet("v1/pizzas/{id:guid}")]
     public async Task<IActionResult> GetByIdAsync(
-        [FromServices] PizzeriaDataContext context,
+        
         [FromRoute]Guid id)
     {
         try
         {
-            var pizza = await context
+            var pizza = await _context
                 .Pizzas
                 .AsNoTracking()
                 .Select(x =>
@@ -81,8 +84,7 @@ public class PizzaController : ControllerBase
 
     [HttpPost("v1/pizzas")]
     public async Task<IActionResult> PostAsync(
-        [FromBody] EditorPizzaViewModel model,
-        [FromServices] PizzeriaDataContext context)
+        [FromBody] EditorPizzaViewModel model)
     {
         if (!ModelState.IsValid)
             return BadRequest(new ResultViewModel<string>(ModelState.GetErrors()));
@@ -105,8 +107,8 @@ public class PizzaController : ControllerBase
                 Rating = 0
             };
 
-            await context.Pizzas.AddAsync(pizza);
-            await context.SaveChangesAsync();
+            await _context.Pizzas.AddAsync(pizza);
+            await _context.SaveChangesAsync();
             return Ok(new ResultViewModel<dynamic>(
                 new
                 {
@@ -130,7 +132,7 @@ public class PizzaController : ControllerBase
     [HttpPut("v1/pizzas/{id:guid}")]
     public async Task<IActionResult> PutAsync(
         [FromBody] EditorPizzaViewModel model,
-        [FromServices] PizzeriaDataContext context,
+        
         [FromRoute]Guid id)
     {
         if (!ModelState.IsValid)
@@ -138,7 +140,7 @@ public class PizzaController : ControllerBase
 
         try
         {
-            var pizza = await context.Pizzas.FirstOrDefaultAsync(x => x.Id == id);
+            var pizza = await _context.Pizzas.FirstOrDefaultAsync(x => x.Id == id);
 
             if (pizza == null)
                 return NotFound(new ResultViewModel<string>("Pizza não encontrada."));
@@ -154,8 +156,8 @@ public class PizzaController : ControllerBase
             pizza.IsFrozen = model.IsFrozen;
 
 
-            context.Pizzas.Update(pizza);
-            await context.SaveChangesAsync();
+            _context.Pizzas.Update(pizza);
+            await _context.SaveChangesAsync();
             return Ok(new ResultViewModel<dynamic>(
                 new
                 {
@@ -180,19 +182,18 @@ public class PizzaController : ControllerBase
 
     [HttpDelete("v1/pizzas/{id:guid}")]
     public async Task<IActionResult> DeleteAsync(
-        [FromServices] PizzeriaDataContext context,
         [FromRoute]Guid id) {
         try
         {
-            var pizza = await context
+            var pizza = await _context
                 .Pizzas
                 .FirstOrDefaultAsync(x => x.Id == id);
             
             if (pizza == null)
                 return NotFound(new ResultViewModel<string>("Pizza não encontrada."));
 
-            context.Pizzas.Remove(pizza);
-            await context.SaveChangesAsync();
+            _context.Pizzas.Remove(pizza);
+            await _context.SaveChangesAsync();
             return Ok(new ResultViewModel<dynamic>(new { id = pizza.Id }, []));
         }
         catch (Exception)
