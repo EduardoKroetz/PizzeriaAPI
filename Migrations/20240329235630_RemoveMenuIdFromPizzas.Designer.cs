@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PizzeriaApi.Data;
 
@@ -11,9 +12,11 @@ using PizzeriaApi.Data;
 namespace PizzeriaApi.Migrations
 {
     [DbContext(typeof(PizzeriaDataContext))]
-    partial class PizzeriaDataContextModelSnapshot : ModelSnapshot
+    [Migration("20240329235630_RemoveMenuIdFromPizzas")]
+    partial class RemoveMenuIdFromPizzas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,19 +155,13 @@ namespace PizzeriaApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 30, 1, 1, 4, 918, DateTimeKind.Utc).AddTicks(6116))
+                        .HasDefaultValue(new DateTime(2024, 3, 29, 23, 56, 29, 361, DateTimeKind.Utc).AddTicks(3592))
                         .HasColumnName("CreatedAt");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("NVARCHAR")
-                        .HasColumnName("Name");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 30, 1, 1, 4, 918, DateTimeKind.Utc).AddTicks(6482))
+                        .HasDefaultValue(new DateTime(2024, 3, 29, 23, 56, 29, 361, DateTimeKind.Utc).AddTicks(3952))
                         .HasColumnName("UpdatedAt");
 
                     b.HasKey("Id");
@@ -186,7 +183,7 @@ namespace PizzeriaApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 30, 1, 1, 4, 923, DateTimeKind.Utc).AddTicks(2052))
+                        .HasDefaultValue(new DateTime(2024, 3, 29, 23, 56, 29, 365, DateTimeKind.Utc).AddTicks(5980))
                         .HasColumnName("CreatedAt");
 
                     b.Property<decimal>("Price")
@@ -201,7 +198,7 @@ namespace PizzeriaApi.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 30, 1, 1, 4, 923, DateTimeKind.Utc).AddTicks(2508))
+                        .HasDefaultValue(new DateTime(2024, 3, 29, 23, 56, 29, 365, DateTimeKind.Utc).AddTicks(6441))
                         .HasColumnName("UpdatedAt");
 
                     b.Property<Guid>("UserId")
@@ -227,7 +224,7 @@ namespace PizzeriaApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 30, 1, 1, 4, 922, DateTimeKind.Utc).AddTicks(9723))
+                        .HasDefaultValue(new DateTime(2024, 3, 29, 23, 56, 29, 365, DateTimeKind.Utc).AddTicks(4021))
                         .HasColumnName("CreatedAt");
 
                     b.Property<string>("Method")
@@ -243,7 +240,7 @@ namespace PizzeriaApi.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 30, 1, 1, 4, 923, DateTimeKind.Utc).AddTicks(626))
+                        .HasDefaultValue(new DateTime(2024, 3, 29, 23, 56, 29, 365, DateTimeKind.Utc).AddTicks(4514))
                         .HasColumnName("UpdatedAt");
 
                     b.Property<Guid>("UserId")
@@ -273,7 +270,7 @@ namespace PizzeriaApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 30, 1, 1, 4, 918, DateTimeKind.Utc).AddTicks(4514))
+                        .HasDefaultValue(new DateTime(2024, 3, 29, 23, 56, 29, 361, DateTimeKind.Utc).AddTicks(2177))
                         .HasColumnName("CreatedAt");
 
                     b.Property<string>("Description")
@@ -321,13 +318,10 @@ namespace PizzeriaApi.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 30, 1, 1, 4, 918, DateTimeKind.Utc).AddTicks(4933))
+                        .HasDefaultValue(new DateTime(2024, 3, 29, 23, 56, 29, 361, DateTimeKind.Utc).AddTicks(2596))
                         .HasColumnName("UpdatedAt");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.ToTable("Pizzas", (string)null);
                 });
@@ -346,7 +340,7 @@ namespace PizzeriaApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 30, 1, 1, 4, 917, DateTimeKind.Utc).AddTicks(3297))
+                        .HasDefaultValue(new DateTime(2024, 3, 29, 23, 56, 29, 360, DateTimeKind.Utc).AddTicks(3112))
                         .HasColumnName("CreatedAt");
 
                     b.Property<string>("Email")
@@ -380,7 +374,7 @@ namespace PizzeriaApi.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 30, 1, 1, 4, 917, DateTimeKind.Utc).AddTicks(3773))
+                        .HasDefaultValue(new DateTime(2024, 3, 29, 23, 56, 29, 360, DateTimeKind.Utc).AddTicks(3551))
                         .HasColumnName("UpdatedAt");
 
                     b.HasKey("Id");

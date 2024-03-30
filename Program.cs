@@ -1,17 +1,16 @@
 using PizzeriaApi;
+using PizzeriaApi.Data;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder();
 
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddControllers().ConfigureApiBehaviorOptions(options => { options.SuppressModelStateInvalidFilter = true; });
+builder.Services.AddDbContext<PizzeriaDataContext>();
 
 
 var app = builder.Build();
 
 LoadConfiguration(app);
-app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 

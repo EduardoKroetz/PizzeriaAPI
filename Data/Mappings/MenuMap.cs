@@ -15,6 +15,11 @@ namespace PizzeriaApi.Data.Mappings {
                 .HasColumnName("Id")
                 .HasColumnType("UNIQUEIDENTIFIER");
 
+            builder.Property(x => x.Name)
+                .HasColumnName("Name")
+                .HasColumnType("NVARCHAR")
+                .HasMaxLength(30);
+
             builder.Property(x => x.CreatedAt)
                 .HasColumnName("CreatedAt")
                 .HasColumnType("DATETIME2")
@@ -28,10 +33,21 @@ namespace PizzeriaApi.Data.Mappings {
 
 
             builder.HasMany(x => x.Pizzas)
-                .WithOne()
-                .HasForeignKey(x => x.MenuId)
-                .HasConstraintName("FK_Menus_Pizzas")
-                .OnDelete(DeleteBehavior.NoAction);
+                .WithMany()
+                .UsingEntity<Dictionary<string, object>>
+                (
+                    "MenuPizzas",
+                    menu => menu.HasOne<Pizza>()
+                        .WithMany()
+                        .HasForeignKey("PizzaId")
+                        .HasConstraintName("FK_MenuPizzas_PizzasId")
+                        .OnDelete(DeleteBehavior.Cascade),
+            pizza => pizza.HasOne<Menu>()
+                        .WithMany()
+                        .HasForeignKey("MenuId")
+                        .HasConstraintName("FK_MenuPizzas_MenuId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                );
         }
     }
 }

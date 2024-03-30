@@ -1,0 +1,206 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PizzeriaApi.Data;
+using PizzeriaApi.Extensions;
+using PizzeriaApi.Models;
+using PizzeriaApi.ViewModels;
+using PizzeriaApi.ViewModels.Pizzas;
+
+namespace PizzeriaApi.Controllers;
+
+[ApiController]
+public class PizzaController : ControllerBase
+{
+    [HttpGet("v1/pizzas")]
+    public async Task<IActionResult> GetAsync(
+        [FromServices] PizzeriaDataContext context,
+        [FromQuery] int skip = 0,
+        [FromQuery] int take = 25)
+    {
+        try
+        {
+            var pizzas = await context
+                .Pizzas
+                .AsNoTracking()
+                .Select(x =>
+                    new GetPizzaViewModel()
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        Price = x.Price,
+                        Flavors = x.Flavors,
+                        Size = x.Size
+                    })
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+            return Ok(new ResultViewModel<List<GetPizzaViewModel>>(pizzas));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ResultViewModel<string>("01X02 - Ocorreu um erro no servidor."));
+        }
+
+    }
+
+
+
+    [HttpGet("v1/pizzas/{id:guid}")]
+    public async Task<IActionResult> GetByIdAsync(
+        [FromServices] PizzeriaDataContext context,
+        [FromRoute]Guid id)
+    {
+        try
+        {
+            var pizza = await context
+                .Pizzas
+                .AsNoTracking()
+                .Select(x =>
+                    new GetPizzaViewModel()
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        Price = x.Price,
+                        Flavors = x.Flavors,
+                        Size = x.Size
+                    })
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (pizza == null)
+                return NotFound(new ResultViewModel<string>("Pizza não encontrada."));
+
+            return Ok(new ResultViewModel<GetPizzaViewModel>(pizza));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ResultViewModel<string>("01X02 - Ocorreu um erro no servidor."));
+        }
+
+    }
+
+
+
+    [HttpPost("v1/pizzas")]
+    public async Task<IActionResult> PostAsync(
+        [FromBody] EditorPizzaViewModel model,
+        [FromServices] PizzeriaDataContext context)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<string>(ModelState.GetErrors()));
+
+        try
+        {
+            var pizza = new Pizza()
+            {
+                Name = model.Name,
+                Flavors = model.Flavors,
+                Category = model.Category,
+                Price = model.Price,
+                Size = model.Size,
+                Description = model.Description,
+                Id = Guid.NewGuid(),
+                InStock = model.InStock,
+                CreatedAt = DateTime.UtcNow.ToUniversalTime(),
+                UpdatedAt = DateTime.UtcNow.ToUniversalTime(),
+                IsFrozen = model.IsFrozen,
+                Rating = 0
+            };
+
+            await context.Pizzas.AddAsync(pizza);
+            await context.SaveChangesAsync();
+            return Ok(new ResultViewModel<dynamic>(
+                new
+                {
+                    id = pizza.Id
+                }, []));
+        }
+        catch (DbUpdateException)
+        {
+            return StatusCode(500,
+                new ResultViewModel<string>("01X03 - Não foi possível inserir os dados no banco de dados."));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ResultViewModel<string>("01X04 - Ocorreu um erro no servidor."));
+        }
+
+    }
+
+
+
+    [HttpPut("v1/pizzas/{id:guid}")]
+    public async Task<IActionResult> PutAsync(
+        [FromBody] EditorPizzaViewModel model,
+        [FromServices] PizzeriaDataContext context,
+        [FromRoute]Guid id)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<string>(ModelState.GetErrors()));
+
+        try
+        {
+            var pizza = await context.Pizzas.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (pizza == null)
+                return NotFound(new ResultViewModel<string>("Pizza não encontrada."));
+
+            pizza.Name = model.Name;
+            pizza.Flavors = model.Flavors;
+            pizza.Category = model.Category;
+            pizza.Price = model.Price;
+            pizza.Size = model.Size;
+            pizza.Description = model.Description;
+            pizza.InStock = model.InStock;
+            pizza.UpdatedAt = DateTime.UtcNow.ToUniversalTime();
+            pizza.IsFrozen = model.IsFrozen;
+
+
+            context.Pizzas.Update(pizza);
+            await context.SaveChangesAsync();
+            return Ok(new ResultViewModel<dynamic>(
+                new
+                {
+                    id = pizza.Id
+                }, []));
+        }
+        catch (DbUpdateException)
+        {
+            return StatusCode(500,
+                new ResultViewModel<string>("01X03 - Não foi possível inserir os dados no banco de dados."));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ResultViewModel<string>("01X04 - Ocorreu um erro no servidor."));
+        }
+
+
+    }
+
+
+
+
+    [HttpDelete("v1/pizzas/{id:guid}")]
+    public async Task<IActionResult> DeleteAsync(
+        [FromServices] PizzeriaDataContext context,
+        [FromRoute]Guid id) {
+        try
+        {
+            var pizza = await context
+                .Pizzas
+                .FirstOrDefaultAsync(x => x.Id == id);
+            
+            if (pizza == null)
+                return NotFound(new ResultViewModel<string>("Pizza não encontrada."));
+
+            context.Pizzas.Remove(pizza);
+            await context.SaveChangesAsync();
+            return Ok(new ResultViewModel<dynamic>(new { id = pizza.Id }, []));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ResultViewModel<string>("01X02 - Ocorreu um erro no servidor."));
+        }
+    }
+
+
+}
+

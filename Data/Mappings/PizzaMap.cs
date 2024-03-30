@@ -20,6 +20,9 @@ public class PizzaMap : IEntityTypeConfiguration<Pizza> {
             .HasColumnType("NVARCHAR")
             .HasMaxLength(60);
 
+        builder.HasIndex(x => x.Name)
+            .IsUnique();
+
         builder.Property(x => x.Flavors)
             .IsRequired()
             .HasColumnName("Flavors")
@@ -77,10 +80,6 @@ public class PizzaMap : IEntityTypeConfiguration<Pizza> {
             .HasColumnType("DATETIME2")
             .HasDefaultValue(DateTime.UtcNow.ToUniversalTime());
 
-
-        builder.Property(x => x.MenuId)
-            .HasColumnName("MenuId")
-            .HasColumnType("UNIQUEIDENTIFIER");
 
     }
 }
