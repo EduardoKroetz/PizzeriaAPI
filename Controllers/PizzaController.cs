@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PizzeriaApi.Data;
 using PizzeriaApi.Extensions;
@@ -9,14 +10,13 @@ using PizzeriaApi.ViewModels.Pizzas;
 namespace PizzeriaApi.Controllers;
 
 [ApiController]
+[Authorize]
 public class PizzaController(PizzeriaDataContext context) : ControllerBase
 {
     private readonly PizzeriaDataContext _context = context;
 
     [HttpGet("v1/pizzas")]
     public async Task<IActionResult> GetAsync(
-        
-
         [FromQuery] int skip = 0,
         [FromQuery] int take = 25)
     {
@@ -50,7 +50,6 @@ public class PizzaController(PizzeriaDataContext context) : ControllerBase
 
     [HttpGet("v1/pizzas/{id:guid}")]
     public async Task<IActionResult> GetByIdAsync(
-        
         [FromRoute]Guid id)
     {
         try
@@ -82,6 +81,7 @@ public class PizzaController(PizzeriaDataContext context) : ControllerBase
 
 
 
+    [Authorize(Roles = "Admin")]
     [HttpPost("v1/pizzas")]
     public async Task<IActionResult> PostAsync(
         [FromBody] EditorPizzaViewModel model)
@@ -129,10 +129,10 @@ public class PizzaController(PizzeriaDataContext context) : ControllerBase
 
 
 
+    [Authorize(Roles = "Admin")]
     [HttpPut("v1/pizzas/{id:guid}")]
     public async Task<IActionResult> PutAsync(
         [FromBody] EditorPizzaViewModel model,
-        
         [FromRoute]Guid id)
     {
         if (!ModelState.IsValid)
@@ -179,6 +179,7 @@ public class PizzaController(PizzeriaDataContext context) : ControllerBase
 
 
 
+    [Authorize(Roles = "Admin")]
 
     [HttpDelete("v1/pizzas/{id:guid}")]
     public async Task<IActionResult> DeleteAsync(

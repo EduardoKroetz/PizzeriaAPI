@@ -1,4 +1,5 @@
 ﻿using System.Data.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PizzeriaApi.Data;
@@ -6,6 +7,7 @@ using PizzeriaApi.ViewModels;
 
 namespace PizzeriaApi.Controllers;
 
+[Authorize(Roles = "Admin")]
 public class MenuPizzaController(PizzeriaDataContext context) : ControllerBase
 {
     private readonly PizzeriaDataContext _context = context;

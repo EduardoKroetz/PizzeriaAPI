@@ -3,14 +3,15 @@ using PizzeriaApi.Data;
 using PizzeriaApi.ViewModels;
 using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
-using PizzeriaApi.Extensions;
 using PizzeriaApi.Models;
 using PizzeriaApi.ViewModels.Menu;
 using PizzeriaApi.ViewModels.Pizzas;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PizzeriaApi.Controllers;
 
 [ApiController]
+[Authorize]
 public class MenuController(PizzeriaDataContext context) : ControllerBase
 {
     private readonly PizzeriaDataContext _context = context;
@@ -100,8 +101,7 @@ public class MenuController(PizzeriaDataContext context) : ControllerBase
 
 
 
-
-
+    [Authorize(Roles = "Admin")]
     [HttpPost("v1/menus")]
     public async Task<IActionResult> PostAsync(
         [FromBody] EditorMenuViewModel model) {
@@ -132,6 +132,7 @@ public class MenuController(PizzeriaDataContext context) : ControllerBase
 
 
 
+    [Authorize(Roles = "Admin")]
     [HttpPut("v1/menus/{id:guid}")]
     public async Task<IActionResult> PutAsync(
         [FromBody] EditorMenuViewModel model,
@@ -144,7 +145,8 @@ public class MenuController(PizzeriaDataContext context) : ControllerBase
                 return NotFound(new ResultViewModel<string>("02X08 - Não foi possível encontrar o menu"));
 
             menu.Name = model.Name;
-
+            menu.UpdatedAt = DateTime.UtcNow.ToUniversalTime();
+            
             _context.Menus.Update(menu);
             await _context.SaveChangesAsync();
 
@@ -162,6 +164,7 @@ public class MenuController(PizzeriaDataContext context) : ControllerBase
     }
 
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("v1/menus/{id:guid}")]
     public async Task<IActionResult> DeleteAsync(
         [FromRoute] Guid id) {
