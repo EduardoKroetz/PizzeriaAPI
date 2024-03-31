@@ -14,7 +14,8 @@ public class TokenService
         var claims = new List<Claim>()
         {
             new(ClaimTypes.Email, user.Email),
-            new(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User")
+            new(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User"),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString())
         };
         var tokenDescriptor = new SecurityTokenDescriptor()
         {

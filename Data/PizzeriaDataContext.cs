@@ -12,7 +12,7 @@ public class PizzeriaDataContext : DbContext
     public DbSet<CartItem> CartItems { get; set; }
     public DbSet<Payament> Payaments { get; set; }
     public DbSet<Order> Orders { get; set; }
-    public DbSet<Order> OrderItems { get; set; }
+    public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<Cart> Carts { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

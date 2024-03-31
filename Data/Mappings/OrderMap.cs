@@ -20,6 +20,11 @@ public class OrderMap : IEntityTypeConfiguration<Order>
             .HasColumnName("Price")
             .HasColumnType("DECIMAL(8,2)");
 
+        builder.Property(x => x.Qtd)
+            .HasColumnName("Qtd")
+            .HasColumnType("INT")
+            .HasDefaultValue(1);
+
         builder.Property(x => x.Status)
             .IsRequired()
             .HasColumnName("Status")
@@ -45,7 +50,7 @@ public class OrderMap : IEntityTypeConfiguration<Order>
             .WithMany()
             .HasForeignKey(x => x.AddressId)
             .HasConstraintName("FK_Orders_Addresses")
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(x => x.UserId)
             .HasColumnName("UserId")
