@@ -11,8 +11,7 @@ public class Order {
     public Guid UserId { get; set; }
     public User User { get; set; }
     public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
-
+    public Payament Payament { get; set; }
     public List<OrderItem> Products { get; set; } 
   
 }

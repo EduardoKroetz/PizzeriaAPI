@@ -2,6 +2,7 @@
 using PizzeriaApi.Models;
 using PizzeriaApi.ViewModels.Account;
 using PizzeriaApi.ViewModels.Address;
+using PizzeriaApi.ViewModels.Payament;
 
 namespace PizzeriaApi.ViewModels.Order;
 public class GetOrderViewModel 
@@ -14,6 +15,7 @@ public class GetOrderViewModel
     public Models.Address Address { get; set; }
     public Guid UserId { get; set; }
     public GetAccountViewModel User { get; set; }
+    public GetPayamentViewModel Payament { get; set; }
     public IEnumerable<GetOrderItemViewModel> Products { get; set; }
 }
 

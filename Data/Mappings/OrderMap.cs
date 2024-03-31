@@ -35,13 +35,6 @@ public class OrderMap : IEntityTypeConfiguration<Order>
             .HasColumnType("DATETIME2")
             .HasDefaultValue(DateTime.UtcNow.ToUniversalTime());
 
-
-        builder.Property(x => x.UpdatedAt)
-            .HasColumnName("UpdatedAt")
-            .HasColumnType("DATETIME2")
-            .HasDefaultValue(DateTime.UtcNow.ToUniversalTime());
-
-
         builder.Property(x => x.AddressId)
             .HasColumnName("AddressId")
             .HasColumnType("UNIQUEIDENTIFIER");

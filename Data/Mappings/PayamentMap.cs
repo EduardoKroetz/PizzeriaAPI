@@ -19,6 +19,11 @@ namespace PizzeriaApi.Data.Mappings {
                 .HasMaxLength(30)
                 .HasConversion<string>();
 
+            builder.Property(x => x.Finish)
+                .HasColumnName("Finish")
+                .HasColumnType("BIT")
+                .HasDefaultValue(0);
+
             builder.Property(x => x.Price)
                 .IsRequired()
                 .HasColumnName("Price")
@@ -29,12 +34,6 @@ namespace PizzeriaApi.Data.Mappings {
                 .HasColumnType("DATETIME2")
                 .HasDefaultValue(DateTime.UtcNow.ToUniversalTime());
 
-
-            builder.Property(x => x.UpdatedAt)
-                .HasColumnName("UpdatedAt")
-                .HasColumnType("DATETIME2")
-                .HasDefaultValue(DateTime.UtcNow.ToUniversalTime());
-
             builder.Property(x => x.UserId)
                 .IsRequired()
                 .HasColumnName("UserId")
@@ -42,6 +41,13 @@ namespace PizzeriaApi.Data.Mappings {
 
             builder.HasIndex(x => x.UserId);
 
+            builder.HasOne(x => x.Order)
+                .WithOne(x => x.Payament)
+                .HasForeignKey<Payament>(x => x.OrderId)
+                .HasConstraintName("FK_Payaments_Orders")
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasIndex(x => x.OrderId);
 
         }
     }
