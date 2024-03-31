@@ -52,22 +52,11 @@ public class OrderMap : IEntityTypeConfiguration<Order>
             .HasColumnType("UNIQUEIDENTIFIER");
 
 
-        builder.HasMany(x => x.Pizzas)
-            .WithMany()
-            .UsingEntity<Dictionary<string, object>>
-            (
-                "OrderPizzas",
-                order => order.HasOne<Pizza>()
-                    .WithMany()
-                    .HasForeignKey("PizzaId")
-                    .HasConstraintName("FK_OrderPizzas_Pizzas")
-                    .OnDelete(DeleteBehavior.Cascade),
-                pizza => pizza.HasOne<Order>()
-                    .WithMany()
-                    .HasForeignKey("OrderId")
-                    .HasConstraintName("FK_OrderPizzas_Orders")
-                    .OnDelete(DeleteBehavior.Cascade)
-            );
+        builder.HasMany(x => x.Products)
+            .WithOne()
+            .HasForeignKey(x => x.OrderId)
+            .HasConstraintName("FK_Orders_OrderItems")
+            .OnDelete(DeleteBehavior.Cascade);
 
     }
 }

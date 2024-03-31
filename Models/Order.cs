@@ -12,7 +12,7 @@ public class Order {
     public Guid UserId { get; set; }
     public User User { get; set; }
 
-    public List<Pizza> Pizzas { get; set; } 
+    public List<OrderItem> Products { get; set; } 
   
 }
 

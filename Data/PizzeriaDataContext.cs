@@ -12,13 +12,14 @@ public class PizzeriaDataContext : DbContext
     public DbSet<CartItem> CartItems { get; set; }
     public DbSet<Payament> Payaments { get; set; }
     public DbSet<Order> Orders { get; set; }
+    public DbSet<Order> OrderItems { get; set; }
     public DbSet<Cart> Carts { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         Console.WriteLine(Configurations.ConnectionString);
-        optionsBuilder.UseSqlServer(Configurations.ConnectionString);
-        //optionsBuilder.UseSqlServer("Server=localhost,1433;Database=Pizzeria;User ID=sa;Password=1q2w3e4r@#$;TrustServerCertificate=true");
+        //optionsBuilder.UseSqlServer(Configurations.ConnectionString);
+        optionsBuilder.UseSqlServer("Server=localhost,1433;Database=Pizzeria;User ID=sa;Password=1q2w3e4r@#$;TrustServerCertificate=true");
 
     }
 
@@ -32,6 +33,7 @@ public class PizzeriaDataContext : DbContext
         modelBuilder.ApplyConfiguration(new PayamentMap());
         modelBuilder.ApplyConfiguration(new OrderMap());
         modelBuilder.ApplyConfiguration(new CartMap());
+        modelBuilder.ApplyConfiguration(new OrderItemMap());
 
     }
 }
