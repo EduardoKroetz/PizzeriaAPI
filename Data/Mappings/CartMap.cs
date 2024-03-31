@@ -29,21 +29,10 @@ public class CartMap : IEntityTypeConfiguration<Cart> {
             .HasConstraintName("FK_Carts_Users");
 
         builder.HasMany(x => x.Products)
-            .WithMany()
-            .UsingEntity<Dictionary<string, object>>
-            (
-                "CartCartItems",
-                cart => cart.HasOne<CartItem>()
-                    .WithMany()
-                    .HasForeignKey("CartItemId")
-                    .HasConstraintName("FK_CartCartItems_CartItem")
-                    .OnDelete(DeleteBehavior.Cascade),
-                cartItem => cartItem.HasOne<Cart>()
-                    .WithMany()
-                    .HasForeignKey("CartId")
-                    .HasConstraintName("FK_CartCartItems_Cart")
-                    .OnDelete(DeleteBehavior.Cascade)
-            );
+            .WithOne()
+            .HasForeignKey(x => x.CartId)
+            .HasConstraintName("FK_Carts_CartItems")
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
 
