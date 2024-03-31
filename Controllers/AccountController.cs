@@ -74,7 +74,7 @@ public class AccountController(PizzeriaDataContext context) : ControllerBase
                 .FirstOrDefaultAsync(x => x.Email == model.Email);
 
             if (user == null || !PasswordHasher.Verify(user.PasswordHash, model.Password))
-                return NotFound(new ResultViewModel<string>("Email ou senha não coincidem."));
+                return NotFound(new ResultViewModel<string>("04X03 - Email ou senha não coincidem."));
 
             var token = tokenService.GenerateToken(user);
 
@@ -124,16 +124,47 @@ public class AccountController(PizzeriaDataContext context) : ControllerBase
         }
         catch (DbUpdateException)
         {
-            return StatusCode(500, new ResultViewModel<string>("04X01 - Esse email já está cadastrado."));
+            return StatusCode(500, new ResultViewModel<string>("04X05 -Esse email já está cadastrado."));
         }
         catch (Exception)
         {
-            return StatusCode(500, new ResultViewModel<string>("04X02 - Ocorreu um erro no servidor."));
+            return StatusCode(500, new ResultViewModel<string>("04X06 - Ocorreu um erro no servidor."));
         }
     }
 
 
 
+    [Authorize]
+    [HttpDelete("v1/accounts/{id:guid}")]
+    public async Task<IActionResult> DeleteAsync(
+        [FromRoute] Guid id)
+    {
+        try
+        {
+            var user = await _context
+                .Users
+                .Include(x => x.Cart)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (user == null)
+                return NotFound(new ResultViewModel<string>("04X07 -Usuário não encontrado."));
+
+            _context.Carts.Remove(user.Cart);
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return Ok(new ResultViewModel<string>("O usuário foi deletado do banco de dados", []));
+        }
+        catch (DbUpdateException)
+        {
+            return StatusCode(500, new ResultViewModel<string>("04X08 - Esse email já está cadastrado."));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ResultViewModel<string>("04X09 - Ocorreu um erro no servidor."));
+        }
+  
+    }
 }
 
-
+ 
