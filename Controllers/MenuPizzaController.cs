@@ -7,6 +7,7 @@ using PizzeriaApi.ViewModels;
 
 namespace PizzeriaApi.Controllers;
 
+[ApiController]
 [Authorize(Roles = "Admin")]
 public class MenuPizzaController(PizzeriaDataContext context) : ControllerBase
 {
@@ -33,7 +34,7 @@ public class MenuPizzaController(PizzeriaDataContext context) : ControllerBase
             await _context.SaveChangesAsync();
             return Ok(new ResultViewModel<dynamic>(new { id = menu.Id }, []));
         }
-        catch (DbException)
+        catch (DbUpdateException)
         {
             return StatusCode(500, new ResultViewModel<string>("03X03 - Ocorreu um erro no banco de dados."));
         }
@@ -69,7 +70,7 @@ public class MenuPizzaController(PizzeriaDataContext context) : ControllerBase
             await _context.SaveChangesAsync();
             return Ok(new ResultViewModel<dynamic>(new { id = menu.Id }, []));
         }
-        catch (DbException)
+        catch (DbUpdateException)
         {
             return StatusCode(500, new ResultViewModel<string>("03X07 - Ocorreu um erro no banco de dados."));
         }

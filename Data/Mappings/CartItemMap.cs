@@ -31,6 +31,7 @@ public class CartItemMap : IEntityTypeConfiguration<CartItem>
             .HasColumnName("PizzaId")
             .HasColumnType("UNIQUEIDENTIFIER");
 
+        builder.HasIndex(x => x.PizzaId);
 
         builder.HasOne(x => x.Pizza)
             .WithMany()

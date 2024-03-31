@@ -63,6 +63,9 @@ public class UserMap : IEntityTypeConfiguration<User> {
             .HasColumnName("CartId")
             .HasColumnType("UNIQUEIDENTIFIER");
 
+        builder.HasIndex(x => x.CartId);
+
+
         //RELAÇÕES
 
         builder.HasMany(x => x.Orders)

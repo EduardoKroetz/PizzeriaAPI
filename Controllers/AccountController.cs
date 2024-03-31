@@ -10,6 +10,8 @@ using PizzeriaApi.Services;
 using SecureIdentity.Password;
 
 namespace PizzeriaApi.Controllers;
+
+[ApiController]
 public class AccountController(PizzeriaDataContext context) : ControllerBase
 {
     private readonly PizzeriaDataContext _context = context;

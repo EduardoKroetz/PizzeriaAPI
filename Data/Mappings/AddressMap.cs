@@ -26,6 +26,14 @@ public class AddressMap : IEntityTypeConfiguration<Address>
             .HasColumnName("Number")
             .HasColumnType("INT");
 
+        builder.HasOne(x => x.Order)
+            .WithOne(x => x.Address)
+            .HasForeignKey<Address>(x => x.OrderId)
+            .HasConstraintName("FK_Adresses_Orders")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(x => x.OrderId);
+
     }
 }
 

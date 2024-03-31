@@ -45,7 +45,7 @@ public class MenuController(PizzeriaDataContext context) : ControllerBase
             
             return Ok(new ResultViewModel<List<GetMenuViewModel>>(menus));
         }
-        catch (DbException)
+        catch (DbUpdateException)
         {
             return StatusCode(500, new ResultViewModel<string>("02X01 - Ocorreu um erro no banco de dados."));
         }
@@ -88,7 +88,7 @@ public class MenuController(PizzeriaDataContext context) : ControllerBase
 
             return Ok(new ResultViewModel<GetMenuViewModel>(menu));
         }
-        catch (DbException)
+        catch (DbUpdateException)
         {
             return StatusCode(500, new ResultViewModel<string>("02X04 - Ocorreu um erro no banco de dados."));
         }
@@ -119,7 +119,7 @@ public class MenuController(PizzeriaDataContext context) : ControllerBase
 
             return Ok(new ResultViewModel<dynamic>(new { id = menu.Id }, []));
         }
-        catch (DbException)
+        catch (DbUpdateException)
         {
             return StatusCode(500, new ResultViewModel<string>("02X06 - Ocorreu um erro no banco de dados."));
         }
@@ -152,7 +152,7 @@ public class MenuController(PizzeriaDataContext context) : ControllerBase
 
             return Ok(new ResultViewModel<dynamic>(new { id = menu.Id }, []));
         }
-        catch (DbException)
+        catch (DbUpdateException)
         {
             return StatusCode(500, new ResultViewModel<string>("02X09 - Ocorreu um erro no banco de dados."));
         }
@@ -182,7 +182,7 @@ public class MenuController(PizzeriaDataContext context) : ControllerBase
 
             return Ok(new ResultViewModel<dynamic>(new { id = menu.Id }, []));
         }
-        catch (DbException)
+        catch (DbUpdateException)
         {
             return StatusCode(500, new ResultViewModel<string>("02X12 - Ocorreu um erro no banco de dados."));
         }

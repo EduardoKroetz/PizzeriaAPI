@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PizzeriaApi.Data;
 
@@ -11,9 +12,11 @@ using PizzeriaApi.Data;
 namespace PizzeriaApi.Migrations
 {
     [DbContext(typeof(PizzeriaDataContext))]
-    partial class PizzeriaDataContextModelSnapshot : ModelSnapshot
+    [Migration("20240331175528_CreateIndexes")]
+    partial class CreateIndexes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,9 +55,6 @@ namespace PizzeriaApi.Migrations
                         .HasColumnType("INT")
                         .HasColumnName("Number");
 
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("UNIQUEIDENTIFIER");
-
                     b.Property<string>("Street")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -62,9 +62,6 @@ namespace PizzeriaApi.Migrations
                         .HasColumnName("Street");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OrderId")
-                        .IsUnique();
 
                     b.ToTable("Addresses", (string)null);
                 });
@@ -136,7 +133,7 @@ namespace PizzeriaApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 31, 18, 16, 18, 211, DateTimeKind.Utc).AddTicks(3240))
+                        .HasDefaultValue(new DateTime(2024, 3, 31, 17, 55, 28, 425, DateTimeKind.Utc).AddTicks(9987))
                         .HasColumnName("CreatedAt");
 
                     b.Property<string>("Name")
@@ -148,7 +145,7 @@ namespace PizzeriaApi.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 31, 18, 16, 18, 211, DateTimeKind.Utc).AddTicks(3740))
+                        .HasDefaultValue(new DateTime(2024, 3, 31, 17, 55, 28, 426, DateTimeKind.Utc).AddTicks(541))
                         .HasColumnName("UpdatedAt");
 
                     b.HasKey("Id");
@@ -170,7 +167,7 @@ namespace PizzeriaApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 31, 18, 16, 18, 220, DateTimeKind.Utc).AddTicks(8270))
+                        .HasDefaultValue(new DateTime(2024, 3, 31, 17, 55, 28, 432, DateTimeKind.Utc).AddTicks(4326))
                         .HasColumnName("CreatedAt");
 
                     b.Property<decimal>("Price")
@@ -191,7 +188,7 @@ namespace PizzeriaApi.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 31, 18, 16, 18, 220, DateTimeKind.Utc).AddTicks(8709))
+                        .HasDefaultValue(new DateTime(2024, 3, 31, 17, 55, 28, 432, DateTimeKind.Utc).AddTicks(4987))
                         .HasColumnName("UpdatedAt");
 
                     b.Property<Guid>("UserId")
@@ -200,7 +197,8 @@ namespace PizzeriaApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AddressId");
+                    b.HasIndex("AddressId")
+                        .IsUnique();
 
                     b.HasIndex("UserId");
 
@@ -250,7 +248,7 @@ namespace PizzeriaApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 31, 18, 16, 18, 220, DateTimeKind.Utc).AddTicks(4592))
+                        .HasDefaultValue(new DateTime(2024, 3, 31, 17, 55, 28, 432, DateTimeKind.Utc).AddTicks(381))
                         .HasColumnName("CreatedAt");
 
                     b.Property<string>("Method")
@@ -266,7 +264,7 @@ namespace PizzeriaApi.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 31, 18, 16, 18, 220, DateTimeKind.Utc).AddTicks(5198))
+                        .HasDefaultValue(new DateTime(2024, 3, 31, 17, 55, 28, 432, DateTimeKind.Utc).AddTicks(1080))
                         .HasColumnName("UpdatedAt");
 
                     b.Property<Guid>("UserId")
@@ -296,7 +294,7 @@ namespace PizzeriaApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 31, 18, 16, 18, 210, DateTimeKind.Utc).AddTicks(9851))
+                        .HasDefaultValue(new DateTime(2024, 3, 31, 17, 55, 28, 425, DateTimeKind.Utc).AddTicks(7627))
                         .HasColumnName("CreatedAt");
 
                     b.Property<string>("Description")
@@ -344,7 +342,7 @@ namespace PizzeriaApi.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 31, 18, 16, 18, 211, DateTimeKind.Utc).AddTicks(355))
+                        .HasDefaultValue(new DateTime(2024, 3, 31, 17, 55, 28, 425, DateTimeKind.Utc).AddTicks(8205))
                         .HasColumnName("UpdatedAt");
 
                     b.HasKey("Id");
@@ -369,7 +367,7 @@ namespace PizzeriaApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 31, 18, 16, 18, 208, DateTimeKind.Utc).AddTicks(6534))
+                        .HasDefaultValue(new DateTime(2024, 3, 31, 17, 55, 28, 423, DateTimeKind.Utc).AddTicks(9755))
                         .HasColumnName("CreatedAt");
 
                     b.Property<string>("Email")
@@ -403,7 +401,7 @@ namespace PizzeriaApi.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("DATETIME2")
-                        .HasDefaultValue(new DateTime(2024, 3, 31, 18, 16, 18, 208, DateTimeKind.Utc).AddTicks(7257))
+                        .HasDefaultValue(new DateTime(2024, 3, 31, 17, 55, 28, 424, DateTimeKind.Utc).AddTicks(421))
                         .HasColumnName("UpdatedAt");
 
                     b.HasKey("Id");
@@ -434,18 +432,6 @@ namespace PizzeriaApi.Migrations
                         .HasConstraintName("FK_MenuPizzas_PizzasId");
                 });
 
-            modelBuilder.Entity("PizzeriaApi.Models.Address", b =>
-                {
-                    b.HasOne("PizzeriaApi.Models.Order", "Order")
-                        .WithOne("Address")
-                        .HasForeignKey("PizzeriaApi.Models.Address", "OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_Adresses_Orders");
-
-                    b.Navigation("Order");
-                });
-
             modelBuilder.Entity("PizzeriaApi.Models.CartItem", b =>
                 {
                     b.HasOne("PizzeriaApi.Models.Cart", null)
@@ -467,12 +453,21 @@ namespace PizzeriaApi.Migrations
 
             modelBuilder.Entity("PizzeriaApi.Models.Order", b =>
                 {
+                    b.HasOne("PizzeriaApi.Models.Address", "Address")
+                        .WithOne()
+                        .HasForeignKey("PizzeriaApi.Models.Order", "AddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_Orders_Addresses");
+
                     b.HasOne("PizzeriaApi.Models.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_Users_Orders");
+
+                    b.Navigation("Address");
 
                     b.Navigation("User");
                 });
@@ -530,9 +525,6 @@ namespace PizzeriaApi.Migrations
 
             modelBuilder.Entity("PizzeriaApi.Models.Order", b =>
                 {
-                    b.Navigation("Address")
-                        .IsRequired();
-
                     b.Navigation("Products");
                 });
 

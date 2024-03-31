@@ -36,8 +36,12 @@ namespace PizzeriaApi.Data.Mappings {
                 .HasDefaultValue(DateTime.UtcNow.ToUniversalTime());
 
             builder.Property(x => x.UserId)
+                .IsRequired()
                 .HasColumnName("UserId")
                 .HasColumnType("UNIQUEIDENTIFIER");
+
+            builder.HasIndex(x => x.UserId);
+
 
         }
     }

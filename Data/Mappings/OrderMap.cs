@@ -46,16 +46,13 @@ public class OrderMap : IEntityTypeConfiguration<Order>
             .HasColumnName("AddressId")
             .HasColumnType("UNIQUEIDENTIFIER");
 
-        builder.HasOne(x => x.Address)
-            .WithMany()
-            .HasForeignKey(x => x.AddressId)
-            .HasConstraintName("FK_Orders_Addresses")
-            .OnDelete(DeleteBehavior.Cascade);
-
+        builder.HasIndex(x => x.AddressId);
+        
         builder.Property(x => x.UserId)
             .HasColumnName("UserId")
             .HasColumnType("UNIQUEIDENTIFIER");
 
+        builder.HasIndex(x => x.UserId);
 
         builder.HasMany(x => x.Products)
             .WithOne()

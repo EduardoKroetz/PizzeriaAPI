@@ -30,6 +30,8 @@ public class OrderItemMap : IEntityTypeConfiguration<OrderItem>
             .HasColumnName("PizzaId")
             .HasColumnType("UNIQUEIDENTIFIER");
 
+        builder.HasIndex(x => x.PizzaId);
+
         builder.HasOne(x => x.Pizza)
             .WithMany()
             .HasForeignKey(x => x.PizzaId)

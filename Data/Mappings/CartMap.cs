@@ -23,6 +23,8 @@ public class CartMap : IEntityTypeConfiguration<Cart> {
             .HasColumnName("UserId")
             .HasColumnType("UNIQUEIDENTIFIER");
 
+        builder.HasIndex(x => x.UserId);
+
         builder.HasOne(x => x.User)
             .WithOne(x => x.Cart)
             .HasForeignKey<User>(x => x.CartId)

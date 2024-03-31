@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PizzeriaApi.Data;
 
@@ -11,9 +12,11 @@ using PizzeriaApi.Data;
 namespace PizzeriaApi.Migrations
 {
     [DbContext(typeof(PizzeriaDataContext))]
-    partial class PizzeriaDataContextModelSnapshot : ModelSnapshot
+    [Migration("20240331181618_AddressOrdersRelation")]
+    partial class AddressOrdersRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

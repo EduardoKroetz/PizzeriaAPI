@@ -197,6 +197,11 @@ public class PizzaController(PizzeriaDataContext context) : ControllerBase
             await _context.SaveChangesAsync();
             return Ok(new ResultViewModel<dynamic>(new { id = pizza.Id }, []));
         }
+        catch (DbUpdateException)
+        {
+            return StatusCode(500,
+                new ResultViewModel<string>("01X04 - Não foi possível deletar a pizza do banco de dados."));
+        }
         catch (Exception)
         {
             return StatusCode(500, new ResultViewModel<string>("01X02 - Ocorreu um erro no servidor."));
