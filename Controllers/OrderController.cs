@@ -4,13 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using PizzeriaApi.Data;
 using PizzeriaApi.ViewModels;
 using PizzeriaApi.ViewModels.Order;
-using System.Data.Common;
 using System.Security.Claims;
 using PizzeriaApi.Enums;
 using PizzeriaApi.Extensions;
 using PizzeriaApi.Models;
 using PizzeriaApi.ViewModels.Account;
-using PizzeriaApi.ViewModels.Address;
+using PizzeriaApi.ViewModels.Payament;
 
 namespace PizzeriaApi.Controllers;
 
@@ -24,9 +23,11 @@ public class OrderController(PizzeriaDataContext context) : ControllerBase {
     public async Task<IActionResult> GetAsync(){
         try
         {
+            var userId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier));
             var orders = await _context
                 .Orders
                 .AsNoTracking()
+                .Where(x => x.UserId == userId)
                 .Select(x => new GetAllOrderViewModel()
                 {
                     Price = x.Price,
@@ -59,6 +60,7 @@ public class OrderController(PizzeriaDataContext context) : ControllerBase {
                 .Include(x => x.Products)
                 .Include(x => x.Address)
                 .Include(x => x.User)
+                .Include(x => x.Payament)
                 .Select(x => new GetOrderViewModel()
                 {
                     Price = x.Price,
@@ -80,6 +82,13 @@ public class OrderController(PizzeriaDataContext context) : ControllerBase {
                         Id = x.User.Id,
                         Email = x.User.Email,
                         Fullname = x.User.Fullname,
+                    },
+                    Payament = new GetPayamentViewModel()
+                    {
+                        Price = x.Payament.Price,
+                        Finish = x.Payament.Finish,
+                        Id = x.Payament.Id,
+                        Method = x.Payament.Method
                     }
                 })
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -112,16 +121,15 @@ public class OrderController(PizzeriaDataContext context) : ControllerBase {
                 Number = model.Address.Number,
                 Street = model.Address.Street
             };
-
+            var userId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier));
             var order = new Order()
             {
                 AddressId = address.Id,
                 Address = address,
                 CreatedAt = DateTime.UtcNow.ToUniversalTime(),
-                UpdatedAt = DateTime.UtcNow.ToUniversalTime(),
                 Id = Guid.NewGuid(),
                 Status = OrderStatusEnum.Pending,
-                UserId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier)),
+                UserId = userId,
             };
             address.OrderId = order.Id;
             var products = new List<OrderItem>();
@@ -155,6 +163,17 @@ public class OrderController(PizzeriaDataContext context) : ControllerBase {
 
             }
 
+            var payament = new Payament()
+            {
+                Price = order.Price,
+                CreatedAt = DateTime.UtcNow.ToUniversalTime(),
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Method = model.Method,
+                OrderId = order.Id
+            };
+
+            await _context.Payaments.AddAsync(payament);
             await _context.Addresses.AddAsync(address);
             await _context.OrderItems.AddRangeAsync(products);
             await _context.Orders.AddAsync(order);
@@ -187,6 +206,9 @@ public class OrderController(PizzeriaDataContext context) : ControllerBase {
             if (order == null)
                 return NotFound(new ResultViewModel<string>("06X05 Não foi possível encontrar a ordem."));
 
+            var payament = await _context.Payaments.FirstOrDefaultAsync(x => x.OrderId == order.Id);
+
+            _context.Payaments.Remove(payament);
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
 
@@ -201,5 +223,7 @@ public class OrderController(PizzeriaDataContext context) : ControllerBase {
             return StatusCode(500, new ResultViewModel<string>("06X07 - Ocorreu um erro no servidor."));
         }
     }
+
+
 }
 
