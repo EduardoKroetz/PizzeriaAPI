@@ -15,6 +15,7 @@ var app = builder.Build();
 LoadConfiguration(app);
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseStaticFiles();
 app.MapControllers();
 app.Run();
 
@@ -54,4 +55,5 @@ void ConfigureServices(WebApplicationBuilder builder)
     builder.Services.AddDbContext<PizzeriaDataContext>();
     builder.Services.AddTransient<TokenService>();
     builder.Services.AddTransient<EmailService>();
+    builder.Services.AddTransient<ImageService>();
 }

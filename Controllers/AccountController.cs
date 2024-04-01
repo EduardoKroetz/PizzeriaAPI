@@ -19,7 +19,8 @@ public class AccountController(PizzeriaDataContext context) : ControllerBase
     [HttpPost("v1/accounts")]
     public async Task<IActionResult> Register(
         [FromBody]EditorAccountViewModel model,
-        [FromServices]EmailService emailService)
+        [FromServices]EmailService emailService,
+        [FromServices]ImageService imageService)
     {
         if (!ModelState.IsValid)
             return BadRequest(new ResultViewModel<string>(ModelState.GetErrors()));
@@ -33,7 +34,6 @@ public class AccountController(PizzeriaDataContext context) : ControllerBase
                 UpdatedAt = DateTime.UtcNow.ToUniversalTime(),
                 Fullname = model.Fullname,
                 Id = Guid.NewGuid(),
-                Image = model.Image,
                 PasswordHash = PasswordHasher.Hash(model.Password),
                 IsAdmin = false
             };
@@ -52,6 +52,7 @@ public class AccountController(PizzeriaDataContext context) : ControllerBase
                 subject = "Imagine um mundo de deliciosas possibilidades, onde cada pedido de pizza é uma jornada culinária única e personalizada. Bem, agora você não precisa mais apenas imaginar! Com a PizzeriaAPI, você tem acesso a uma plataforma poderosa que vai revolucionar a forma como você interage com pedidos de pizza online."
             };
 
+            user.Image = await imageService.SaveImageAsync(model.Image);
             emailService.SendEmailAsync(email);
 
             await _context.Carts.AddAsync(user.Cart);

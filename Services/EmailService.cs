@@ -7,7 +7,7 @@ using PizzeriaApi.ViewModels;
 namespace PizzeriaApi.Services;
 public class EmailService 
 {
-    public Task SendEmailAsync(Email email)
+    public async void SendEmailAsync(Email email)
     {
         var client = new SmtpClient("smtp-mail.outlook.com", 587)
         {
@@ -22,8 +22,7 @@ public class EmailService
             IsBodyHtml = true
         };
 
-        return client.SendMailAsync(mailMassage);
-
+        await client.SendMailAsync(mailMassage);
     }
 
     public string ShowProductsInEmail(List<Pizza> pizzas) {
