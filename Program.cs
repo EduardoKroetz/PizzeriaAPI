@@ -1,5 +1,8 @@
+using System.IO.Compression;
 using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.IdentityModel.Tokens;
 using PizzeriaApi;
 using PizzeriaApi.Data;
@@ -7,12 +10,13 @@ using PizzeriaApi.Services;
 
 var builder = WebApplication.CreateBuilder();
 
+LoadConfiguration(builder);
+ConfigureMvc(builder);
 ConfigureAuthentications(builder);
 ConfigureServices(builder);
 
 var app = builder.Build();
 
-LoadConfiguration(app);
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseStaticFiles();
@@ -20,13 +24,13 @@ app.MapControllers();
 app.Run();
 
 
-void LoadConfiguration(WebApplication app)
+void LoadConfiguration(WebApplicationBuilder builder)
 {
-    var connectionStringSection = app.Configuration.GetSection("ConnectionStrings");
+    var connectionStringSection = builder.Configuration.GetSection("ConnectionStrings");
     Configurations.ConnectionString = connectionStringSection.GetValue<string>("options");
-
-    Configurations.Email = app.Configuration.GetValue<string>("email");
-    Configurations.EmailPassword = app.Configuration.GetValue<string>("emailPassword");
+    Configurations.JwtKey = builder.Configuration.GetValue<string>("JwtKey");
+    Configurations.Email = builder.Configuration.GetValue<string>("email");
+    Configurations.EmailPassword = builder.Configuration.GetValue<string>("emailPassword");
 }
 
 
@@ -49,9 +53,29 @@ void ConfigureAuthentications(WebApplicationBuilder builder)
     });
 }
 
+void ConfigureMvc(WebApplicationBuilder builder)
+{
+    builder.Services.AddMemoryCache();
+    builder.Services.AddResponseCompression(x =>
+    {
+        x.Providers.Add<GzipCompressionProvider>();
+    });
+    builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+    {
+        options.Level = CompressionLevel.Optimal;
+    });
+    builder.Services.AddControllers()
+        .ConfigureApiBehaviorOptions(options => { options.SuppressModelStateInvalidFilter = true; })
+        .AddJsonOptions(x =>
+        {
+            x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault;
+        });
+}
+
 void ConfigureServices(WebApplicationBuilder builder)
 {
-    builder.Services.AddControllers().ConfigureApiBehaviorOptions(options => { options.SuppressModelStateInvalidFilter = true; });
+  
     builder.Services.AddDbContext<PizzeriaDataContext>();
     builder.Services.AddTransient<TokenService>();
     builder.Services.AddTransient<EmailService>();

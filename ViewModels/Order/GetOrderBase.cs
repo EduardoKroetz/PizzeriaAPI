@@ -2,7 +2,7 @@
 using PizzeriaApi.Models;
 
 namespace PizzeriaApi.ViewModels.Order;
-public class GetAllOrderViewModel 
+public class GetOrderBase 
 {
     public Guid Id { get; set; }
     public decimal Price { get; set; }

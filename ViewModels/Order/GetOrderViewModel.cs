@@ -5,16 +5,10 @@ using PizzeriaApi.ViewModels.Address;
 using PizzeriaApi.ViewModels.Payament;
 
 namespace PizzeriaApi.ViewModels.Order;
-public class GetOrderViewModel 
+public class GetOrderViewModel : GetOrderBase
 {
-    public Guid Id { get; set; }
-    public decimal Price { get; set; }
-    public OrderStatusEnum Status { get; set; }
-    public int Qtd { get; set; }
-    public Guid AddressId { get; set; }
     public Models.Address Address { get; set; }
-    public Guid UserId { get; set; }
-    public GetAccountViewModel User { get; set; }
+    public GetAccountBase User { get; set; }
     public GetPayamentViewModel Payament { get; set; }
     public IEnumerable<GetOrderItemViewModel> Products { get; set; }
 }

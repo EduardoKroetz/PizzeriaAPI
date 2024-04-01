@@ -1,5 +1,5 @@
 ﻿namespace PizzeriaApi.ViewModels.Account;
-public class GetAccountViewModel 
+public class GetAccountBase 
 {
     public Guid Id { get; set; }
     public string Fullname { get; set; }
