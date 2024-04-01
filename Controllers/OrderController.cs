@@ -8,6 +8,7 @@ using System.Security.Claims;
 using PizzeriaApi.Enums;
 using PizzeriaApi.Extensions;
 using PizzeriaApi.Models;
+using PizzeriaApi.Services;
 using PizzeriaApi.ViewModels.Account;
 using PizzeriaApi.ViewModels.Payament;
 
@@ -108,7 +109,8 @@ public class OrderController(PizzeriaDataContext context) : ControllerBase {
 
     [HttpPost("v1/orders")]
     public async Task<IActionResult> PostAsync(
-        [FromBody] EditorOrderViewModel model) {
+        [FromBody] EditorOrderViewModel model,
+        [FromServices] EmailService emailService) {
         if (!ModelState.IsValid)
             return BadRequest(new ResultViewModel<string>(ModelState.GetErrors()));
 
@@ -133,6 +135,7 @@ public class OrderController(PizzeriaDataContext context) : ControllerBase {
             };
             address.OrderId = order.Id;
             var products = new List<OrderItem>();
+            var pizzas = new List<Pizza>();
             try
             {
                 products = model.Products.ConvertAll((x) =>
@@ -140,8 +143,8 @@ public class OrderController(PizzeriaDataContext context) : ControllerBase {
                         var pizza = _context
                             .Pizzas
                             .AsNoTracking()
-                            .Select(y => new { y.Id, y.Price })
                             .FirstOrDefault(y => y.Id == x.PizzaId);
+                        pizzas.Add(pizza);
 
                         order.Price += x.Qtd * pizza.Price;
                         order.Qtd += x.Qtd;
@@ -172,6 +175,22 @@ public class OrderController(PizzeriaDataContext context) : ControllerBase {
                 Method = model.Method,
                 OrderId = order.Id
             };
+
+            var emailUser = User.FindFirstValue(ClaimTypes.Email);
+            var email = new Email()
+            {
+                email = emailUser,
+                subject = "Solicitação de pedido na PizzeriaAPI",
+                message = $"<h1>Olá {emailUser}!</h1>" +
+                          $"<p>Você realizou um pedido em PizzeriaAPI. <strong>Informações do pedido:</strong></p>" +
+                          $"<hr>" +
+                          $"<h2>Produtos:</h2>" +
+                          $"{emailService.ShowProductsInEmail(pizzas)}" +
+                          $"<h2>Preço total: {order.Price}</h2>" +
+                          $"<h2>Forma de pagamento: {payament.Method.ToString()}</h2>"
+            };
+
+            emailService.SendEmailAsync(email);
 
             await _context.Payaments.AddAsync(payament);
             await _context.Addresses.AddAsync(address);

@@ -8,9 +8,7 @@ using PizzeriaApi.Services;
 var builder = WebApplication.CreateBuilder();
 
 ConfigureAuthentications(builder);
-builder.Services.AddControllers().ConfigureApiBehaviorOptions(options => { options.SuppressModelStateInvalidFilter = true; });
-builder.Services.AddDbContext<PizzeriaDataContext>();
-builder.Services.AddTransient<TokenService>();
+ConfigureServices(builder);
 
 var app = builder.Build();
 
@@ -25,6 +23,9 @@ void LoadConfiguration(WebApplication app)
 {
     var connectionStringSection = app.Configuration.GetSection("ConnectionStrings");
     Configurations.ConnectionString = connectionStringSection.GetValue<string>("options");
+
+    Configurations.Email = app.Configuration.GetValue<string>("email");
+    Configurations.EmailPassword = app.Configuration.GetValue<string>("emailPassword");
 }
 
 
@@ -45,4 +46,12 @@ void ConfigureAuthentications(WebApplicationBuilder builder)
             ValidateAudience = false
         };
     });
+}
+
+void ConfigureServices(WebApplicationBuilder builder)
+{
+    builder.Services.AddControllers().ConfigureApiBehaviorOptions(options => { options.SuppressModelStateInvalidFilter = true; });
+    builder.Services.AddDbContext<PizzeriaDataContext>();
+    builder.Services.AddTransient<TokenService>();
+    builder.Services.AddTransient<EmailService>();
 }

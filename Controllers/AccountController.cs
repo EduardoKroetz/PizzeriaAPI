@@ -18,7 +18,8 @@ public class AccountController(PizzeriaDataContext context) : ControllerBase
     
     [HttpPost("v1/accounts")]
     public async Task<IActionResult> Register(
-        [FromBody]EditorAccountViewModel model)
+        [FromBody]EditorAccountViewModel model,
+        [FromServices]EmailService emailService)
     {
         if (!ModelState.IsValid)
             return BadRequest(new ResultViewModel<string>(ModelState.GetErrors()));
@@ -43,6 +44,15 @@ public class AccountController(PizzeriaDataContext context) : ControllerBase
                 User = user
             };
             user.CartId = user.Cart.Id;
+
+            var email = new Email()
+            {
+                email = model.Email,
+                message = "<h1>Olá e bem-vindo à PizzeriaAPI!</h1>",
+                subject = "Imagine um mundo de deliciosas possibilidades, onde cada pedido de pizza é uma jornada culinária única e personalizada. Bem, agora você não precisa mais apenas imaginar! Com a PizzeriaAPI, você tem acesso a uma plataforma poderosa que vai revolucionar a forma como você interage com pedidos de pizza online."
+            };
+
+            emailService.SendEmailAsync(email);
 
             await _context.Carts.AddAsync(user.Cart);
             await _context.Users.AddAsync(user);
