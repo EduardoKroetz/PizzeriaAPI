@@ -17,5 +17,11 @@ public class ImageService
 
         return path;
     }
+
+
+
+    public void DeleteImage(string path) {
+        System.IO.File.Delete(path);
+    }
 }
 

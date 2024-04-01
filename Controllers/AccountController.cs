@@ -59,7 +59,7 @@ public class AccountController(PizzeriaDataContext context) : ControllerBase
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
-            return Ok(new ResultViewModel<string>("O usuário foi registrado no banco de dados.", []));
+            return Ok(new ResultViewModel<dynamic>(new { Id = user.Id}, []));
         }
         catch (DbUpdateException)
         {
@@ -133,7 +133,7 @@ public class AccountController(PizzeriaDataContext context) : ControllerBase
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
-            return Ok(new ResultViewModel<string>("O Administrador foi registrado no banco de dados.", []));
+            return Ok(new ResultViewModel<dynamic>(new { Id = user.Id }, []));
         }
         catch (DbUpdateException)
         {
@@ -178,6 +178,47 @@ public class AccountController(PizzeriaDataContext context) : ControllerBase
         }
   
     }
+
+
+    [Authorize]
+    [HttpPut("v1/accounts/{id:guid}")]
+    public async Task<IActionResult> Put(
+        [FromBody] EditorAccountViewModel model,
+        [FromServices] ImageService imageService,
+        [FromRoute]Guid id) {
+        if (!ModelState.IsValid)
+            return BadRequest(new ResultViewModel<string>(ModelState.GetErrors()));
+
+        try
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (user == null)
+                return NotFound(new ResultViewModel<string>("04X017 - Usuário não encontrado."));
+
+            user.Email = model.Email;
+            user.UpdatedAt = DateTime.UtcNow.ToUniversalTime();
+            user.Fullname = model.Fullname;
+            user.PasswordHash = PasswordHasher.Hash(model.Password);
+
+            imageService.DeleteImage(user.Image);
+            user.Image = await imageService.SaveImageAsync(model.Image);
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            return Ok(new ResultViewModel<dynamic>(new { user.Id }, []));
+        }
+        catch (DbUpdateException)
+        {
+            return StatusCode(500, new ResultViewModel<string>("04X15 - Não foi possível atualizar o usuário no banco de dados."));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ResultViewModel<string>("04X16 - Ocorreu um erro no servidor."));
+        }
+    }
+
 }
 
- 
+
