@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using PizzeriaApi.Data;
 using PizzeriaApi.Extensions;
 using PizzeriaApi.Models;
@@ -17,26 +18,33 @@ public class PizzaController(PizzeriaDataContext context) : ControllerBase
 
     [HttpGet("v1/pizzas")]
     public async Task<IActionResult> GetAsync(
+        [FromServices]IMemoryCache cache,
         [FromQuery] int skip = 0,
         [FromQuery] int take = 25)
     {
         try
         {
-            var pizzas = await _context
-                .Pizzas
-                .AsNoTracking()
-                .Select(x =>
-                    new GetPizzaViewModel()
-                    {
-                        Id = x.Id,
-                        Name = x.Name,
-                        Price = x.Price,
-                        Flavors = x.Flavors,
-                        Size = x.Size
-                    })
-                .Skip(skip)
-                .Take(take)
-                .ToListAsync();
+            var pizzas = await cache.GetOrCreateAsync("PizzasCache", entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(8);
+                var pizzas = _context
+                    .Pizzas
+                    .AsNoTracking()
+                    .Select(x =>
+                        new GetPizzaViewModel()
+                        {
+                            Id = x.Id,
+                            Name = x.Name,
+                            Price = x.Price,
+                            Flavors = x.Flavors,
+                            Size = x.Size
+                        })
+                    .Skip(skip)
+                    .Take(take)
+                    .ToListAsync();
+                return pizzas;
+            });
+
             return Ok(new ResultViewModel<List<GetPizzaViewModel>>(pizzas));
         }
         catch (Exception)
@@ -50,23 +58,30 @@ public class PizzaController(PizzeriaDataContext context) : ControllerBase
 
     [HttpGet("v1/pizzas/{id:guid}")]
     public async Task<IActionResult> GetByIdAsync(
-        [FromRoute]Guid id)
+        [FromRoute]Guid id,
+        [FromServices]IMemoryCache cache)
     {
         try
         {
-            var pizza = await _context
-                .Pizzas
-                .AsNoTracking()
-                .Select(x =>
-                    new GetPizzaViewModel()
-                    {
-                        Id = x.Id,
-                        Name = x.Name,
-                        Price = x.Price,
-                        Flavors = x.Flavors,
-                        Size = x.Size
-                    })
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var pizza = await cache.GetOrCreateAsync("PizzaCache", entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(8);
+                var pizza = _context
+                    .Pizzas
+                    .AsNoTracking()
+                    .Select(x =>
+                        new GetPizzaViewModel()
+                        {
+                            Id = x.Id,
+                            Name = x.Name,
+                            Price = x.Price,
+                            Flavors = x.Flavors,
+                            Size = x.Size
+                        })
+                    .FirstOrDefaultAsync(x => x.Id == id);
+                return pizza;
+            });
+
             if (pizza == null)
                 return NotFound(new ResultViewModel<string>("Pizza não encontrada."));
 

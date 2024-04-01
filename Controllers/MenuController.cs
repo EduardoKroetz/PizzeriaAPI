@@ -7,6 +7,7 @@ using PizzeriaApi.Models;
 using PizzeriaApi.ViewModels.Menu;
 using PizzeriaApi.ViewModels.Pizzas;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace PizzeriaApi.Controllers;
 
@@ -18,36 +19,37 @@ public class MenuController(PizzeriaDataContext context) : ControllerBase
 
     [HttpGet("v1/menus")]
     public async Task<IActionResult> GetAsync(
-        ) 
+        [FromServices]IMemoryCache cache) 
     {
         try
         {
-            var menus = await context 
-                .Menus
-                .AsNoTracking()
-                .Include(x => x.Pizzas)
-                .Select(x => new GetMenuViewModel()
-                {
-                
-                    Id = x.Id,
-                    Name = x.Name,
-                    Pizzas = x.Pizzas.Select(y => new GetPizzaViewModel()
+            var menus = await cache.GetOrCreateAsync("MenusCache", entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(4);
+                var menus = context
+                    .Menus
+                    .AsNoTracking()
+                    .Include(x => x.Pizzas)
+                    .Select(x => new GetMenuViewModel()
                     {
-                        Category = y.Category,
-                        Flavors = y.Flavors,
-                        Id = y.Id,
-                        Name = y.Name,
-                        Price = y.Price,
-                        Size = y.Size
+
+                        Id = x.Id,
+                        Name = x.Name,
+                        Pizzas = x.Pizzas.Select(y => new GetPizzaViewModel()
+                        {
+                            Category = y.Category,
+                            Flavors = y.Flavors,
+                            Id = y.Id,
+                            Name = y.Name,
+                            Price = y.Price,
+                            Size = y.Size
+                        })
                     })
-                })
-                .ToListAsync();
+                    .ToListAsync();
+                return menus;
+            });
             
             return Ok(new ResultViewModel<List<GetMenuViewModel>>(menus));
-        }
-        catch (DbUpdateException)
-        {
-            return StatusCode(500, new ResultViewModel<string>("02X01 - Ocorreu um erro no banco de dados."));
         }
         catch (Exception)
         {
@@ -60,37 +62,40 @@ public class MenuController(PizzeriaDataContext context) : ControllerBase
 
     [HttpGet("v1/menus/{id:guid}")]
     public async Task<IActionResult> GetByIdAsync(
-        [FromRoute]Guid id) {
+        [FromRoute]Guid id,
+        [FromServices]IMemoryCache cache) {
         try
         {
-            var menu = await _context
-                .Menus
-                .AsNoTracking()
-                .Include(x => x.Pizzas)
-                .Select(x => new GetMenuViewModel()
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Pizzas = x.Pizzas.Select(y => new GetPizzaViewModel()
+            var menu = await cache.GetOrCreateAsync("MenuCache", entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(4);
+                var menu = _context
+                    .Menus
+                    .AsNoTracking()
+                    .Include(x => x.Pizzas)
+                    .Select(x => new GetMenuViewModel()
                     {
-                        Category = y.Category,
-                        Flavors = y.Flavors,
-                        Id = y.Id,
-                        Name = y.Name,
-                        Price = y.Price,
-                        Size = y.Size
+                        Id = x.Id,
+                        Name = x.Name,
+                        Pizzas = x.Pizzas.Select(y => new GetPizzaViewModel()
+                        {
+                            Category = y.Category,
+                            Flavors = y.Flavors,
+                            Id = y.Id,
+                            Name = y.Name,
+                            Price = y.Price,
+                            Size = y.Size
+                        })
                     })
-                })
-                .FirstOrDefaultAsync(x => x.Id == id);
+                    .FirstOrDefaultAsync(x => x.Id == id);
+                return menu;
+            });
+    
 
             if (menu == null)
                 return NotFound(new ResultViewModel<string>("02X03 - Não foi possível encontrar o menu"));
 
             return Ok(new ResultViewModel<GetMenuViewModel>(menu));
-        }
-        catch (DbUpdateException)
-        {
-            return StatusCode(500, new ResultViewModel<string>("02X04 - Ocorreu um erro no banco de dados."));
         }
         catch (Exception)
         {

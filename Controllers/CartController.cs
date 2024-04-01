@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PizzeriaApi.Data;
 using PizzeriaApi.ViewModels;
-using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using PizzeriaApi.Models;
-using PizzeriaApi.ViewModels.Menu;
-using PizzeriaApi.ViewModels.Pizzas;
 using Microsoft.AspNetCore.Authorization;
 using PizzeriaApi.ViewModels.Cart;
 using PizzeriaApi.ViewModels.CartItem;
@@ -16,6 +13,40 @@ namespace PizzeriaApi.Controllers;
 [Authorize]
 public class CartController(PizzeriaDataContext context) : ControllerBase {
     private readonly PizzeriaDataContext _context = context;
+
+
+    [HttpGet("v1/carts/users/{userId:guid}")]
+    public async Task<IActionResult> GetByUserIdAsync(
+        [FromRoute] Guid userId) {
+        try
+        {
+            var cart = await _context
+                .Carts
+                .AsNoTracking()
+                .Include(x => x.Products)
+                .Select(x => new GetCartViewModel()
+                {
+                    Id = x.Id,
+                    Products = x.Products,
+                    Price = x.Price,
+                    UserId = x.UserId,
+                    ProductQtd = x.ProductQtd
+                })
+                .FirstOrDefaultAsync(x => x.UserId == userId);
+
+            if (cart == null)
+                return NotFound(new ResultViewModel<string>("05X12 - Não foi possível encontrar o carrinho"));
+
+            return Ok(new ResultViewModel<GetCartViewModel>(cart));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ResultViewModel<string>("05X13 - Ocorreu um erro no servidor."));
+        }
+
+    }
+
+
 
     [HttpGet("v1/carts/{id:guid}")]
     public async Task<IActionResult> GetByIdAsync(

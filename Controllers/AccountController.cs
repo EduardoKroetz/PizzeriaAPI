@@ -7,6 +7,7 @@ using PizzeriaApi.ViewModels;
 using PizzeriaApi.ViewModels.Account;
 using PizzeriaApi.Models;
 using PizzeriaApi.Services;
+using PizzeriaApi.ViewModels.Cart;
 using SecureIdentity.Password;
 
 namespace PizzeriaApi.Controllers;
@@ -15,7 +16,108 @@ namespace PizzeriaApi.Controllers;
 public class AccountController(PizzeriaDataContext context) : ControllerBase
 {
     private readonly PizzeriaDataContext _context = context;
-    
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("v1/accounts")]
+    public async Task<IActionResult> GetAsync() {
+        try
+        {
+            var user = await _context
+                .Users
+                .AsNoTracking()
+                .Include(x => x.Cart)
+                .Select(x => new GetAccountWithCartViewModel()
+                {
+                    Id = x.Id,
+                    Fullname = x.Fullname,
+                    Email = x.Email,
+                    Cart = new GetCartBase()
+                    {
+                        Price = x.Cart.Price,
+                        ProductQtd = x.Cart.ProductQtd,
+                        Id = x.CartId
+                    },
+                })
+                .ToListAsync();
+
+            return Ok(new ResultViewModel<List<GetAccountWithCartViewModel>>(user));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ResultViewModel<string>("04X19 - Ocorreu um erro no servidor."));
+        }
+
+    }
+
+
+
+    [Authorize]
+    [HttpGet("v1/accounts/{id:guid}")]
+    public async Task<IActionResult> GetByIdAsync(
+        [FromRoute] Guid id) {
+        try
+        {
+            var user = await _context
+                .Users
+                .AsNoTracking()
+                .Include(x => x.Cart)
+                .Select(x => new GetAccountWithCartViewModel()
+                {
+                    Id = x.Id,
+                    Email = x.Email,
+                    Fullname = x.Fullname,
+                    Cart = new GetCartBase()
+                    {
+                        Price = x.Cart.Price,
+                        ProductQtd = x.Cart.ProductQtd,
+                        Id = x.CartId
+                    }
+                })
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (user == null)
+                return NotFound(new ResultViewModel<string>("04X018 - Usuário não encontrado."));
+
+            return Ok(new ResultViewModel<GetAccountWithCartViewModel>(user));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ResultViewModel<string>("04X19 - Ocorreu um erro no servidor."));
+        }
+
+    }
+
+
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("v1/accounts/data/{id:guid}")]
+    public async Task<IActionResult> GetFullDataAsync(
+        [FromRoute] Guid id) {
+        try
+        {
+            var user = await _context
+                .Users
+                .AsNoTracking()
+                .Include(x => x.Cart)
+                .Include(x => x.Orders)
+                .ThenInclude(x => x.Products)
+                .ThenInclude(x => x.Pizza)
+                .Include(x => x.Payments)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (user == null)
+                return NotFound(new ResultViewModel<string>("04X020 - Usuário não encontrado."));
+
+            return Ok(new ResultViewModel<User>(user));
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new ResultViewModel<string>("04X21 - Ocorreu um erro no servidor."));
+        }
+
+    }
+
+
     [HttpPost("v1/accounts")]
     public async Task<IActionResult> Register(
         [FromBody]EditorAccountViewModel model,

@@ -20,16 +20,15 @@ public class OrderController(PizzeriaDataContext context) : ControllerBase {
     private readonly PizzeriaDataContext _context = context;
 
 
-    [HttpGet("v1/orders")]
-    public async Task<IActionResult> GetAsync(){
+    [HttpGet("v1/orders/users/{userId:guid}")]
+    public async Task<IActionResult> GetAsync([FromRoute]Guid userId){
         try
         {
-            var userId = new Guid(User.FindFirstValue(ClaimTypes.NameIdentifier));
             var orders = await _context
                 .Orders
                 .AsNoTracking()
                 .Where(x => x.UserId == userId)
-                .Select(x => new GetAllOrderViewModel()
+                .Select(x => new GetOrderBase()
                 {
                     Price = x.Price,
                     AddressId = x.AddressId,
@@ -40,7 +39,7 @@ public class OrderController(PizzeriaDataContext context) : ControllerBase {
                 })
                 .ToListAsync();
 
-            return Ok(new ResultViewModel<List<GetAllOrderViewModel>>(orders));
+            return Ok(new ResultViewModel<List<GetOrderBase>>(orders));
         }
         catch (Exception)
         {
@@ -78,7 +77,7 @@ public class OrderController(PizzeriaDataContext context) : ControllerBase {
                         Qtd = y.Qtd
                     }),
                     Address = x.Address,
-                    User = new GetAccountViewModel()
+                    User = new GetAccountBase()
                     {
                         Id = x.User.Id,
                         Email = x.User.Email,
