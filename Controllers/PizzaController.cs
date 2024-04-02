@@ -41,6 +41,7 @@ public class PizzaController(PizzeriaDataContext context) : ControllerBase
                         })
                     .Skip(skip)
                     .Take(take)
+                    .OrderBy(x => x.Price)
                     .ToListAsync();
                 return pizzas;
             });

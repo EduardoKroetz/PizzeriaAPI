@@ -5,6 +5,7 @@ using PizzeriaApi.Models;
 namespace PizzeriaApi.Data;
 public class PizzeriaDataContext : DbContext
 {
+    public PizzeriaDataContext(DbContextOptions<PizzeriaDataContext> options) : base(options) { }
     public DbSet<Address> Addresses { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Pizza> Pizzas { get; set; }
@@ -14,14 +15,6 @@ public class PizzeriaDataContext : DbContext
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<Cart> Carts { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        Console.WriteLine(Configurations.ConnectionString);
-        //optionsBuilder.UseSqlServer(Configurations.ConnectionString);
-        optionsBuilder.UseSqlServer("Server=localhost,1433;Database=Pizzeria;User ID=sa;Password=1q2w3e4r@#$;TrustServerCertificate=true");
-
-    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) 
     {

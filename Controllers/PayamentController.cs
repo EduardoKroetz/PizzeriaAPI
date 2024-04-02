@@ -101,7 +101,7 @@ public class PayamentController(PizzeriaDataContext context) : ControllerBase {
         }
     }
 
-    [HttpPost("v1/payaments/pay/{id:guid}")]
+    [HttpPatch("v1/payaments/pay/{id:guid}")]
     public async Task<IActionResult> Pay(
         [FromRoute] Guid id) {
         try

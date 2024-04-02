@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PizzeriaApi;
 using PizzeriaApi.Data;
@@ -15,6 +16,9 @@ ConfigureMvc(builder);
 ConfigureAuthentications(builder);
 ConfigureServices(builder);
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
 app.UseAuthentication();
@@ -23,13 +27,18 @@ app.UseResponseCompression();
 app.UseResponseCaching();
 app.UseStaticFiles();
 app.MapControllers();
-app.Run();
 
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.Run();
 
 void LoadConfiguration(WebApplicationBuilder builder)
 {
-    var connectionStringSection = builder.Configuration.GetSection("ConnectionStrings");
-    Configurations.ConnectionString = connectionStringSection.GetValue<string>("options");
     Configurations.JwtKey = builder.Configuration.GetValue<string>("JwtKey");
     Configurations.Email = builder.Configuration.GetValue<string>("email");
     Configurations.EmailPassword = builder.Configuration.GetValue<string>("emailPassword");
@@ -80,8 +89,11 @@ void ConfigureMvc(WebApplicationBuilder builder)
 
 void ConfigureServices(WebApplicationBuilder builder)
 {
-  
-    builder.Services.AddDbContext<PizzeriaDataContext>();
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    builder.Services.AddDbContext<PizzeriaDataContext>(options =>
+    {
+        options.UseSqlServer(connectionString);
+    });
     builder.Services.AddTransient<TokenService>();
     builder.Services.AddTransient<EmailService>();
     builder.Services.AddTransient<ImageService>();
