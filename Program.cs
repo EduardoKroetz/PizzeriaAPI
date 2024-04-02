@@ -19,6 +19,8 @@ var app = builder.Build();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseResponseCompression();
+app.UseResponseCaching();
 app.UseStaticFiles();
 app.MapControllers();
 app.Run();
@@ -31,6 +33,9 @@ void LoadConfiguration(WebApplicationBuilder builder)
     Configurations.JwtKey = builder.Configuration.GetValue<string>("JwtKey");
     Configurations.Email = builder.Configuration.GetValue<string>("email");
     Configurations.EmailPassword = builder.Configuration.GetValue<string>("emailPassword");
+    Configurations.ApiKey = builder.Configuration.GetValue<string>("ApiKey");
+    Configurations.ApiKeyName = builder.Configuration.GetValue<string>("ApiKeyName");
+
 }
 
 
